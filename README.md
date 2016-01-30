@@ -12,6 +12,7 @@ Go to your dokku server and install following plugins:
 ```
 sudo dokku plugin:install https://github.com/dokku/dokku-postgres.git postgres
 ```
+
 2) Install official **redis** plugin
 ```
 sudo dokku plugin:install https://github.com/dokku/dokku-redis.git redis
@@ -65,7 +66,7 @@ After migrations you will be prompted to create initial user.
 ssh -t dokku@yourserver run sentry "sentry upgrade"
 ```
 
-2. Create user (Optional). Use this step if you skipped it in the previous command.
+2) Create user (Optional). Use this step if you skipped it in the previous command.
 ```
 ssh -t dokku@yourserver run sentry "sentry createuser"
 ```
