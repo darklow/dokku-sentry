@@ -192,5 +192,5 @@ MAILGUN_API_KEY = ''
 
 # Expose any env that starts with SC_
 for env_key, env_val in os.environ.items():
-    if env_key.lower().startswith('SC_'):
-        globals()[env_key[3:]] = env_val
+    if env_key.startswith('SC_'):
+        setattr(sys.modules[__name__], env_key[3:], env_val)
