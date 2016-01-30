@@ -1,1 +1,1 @@
-web: sentry --config=sentry.conf.py start
+web: uwsgi --ini uwsgi.ini
