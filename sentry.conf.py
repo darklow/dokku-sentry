@@ -7,14 +7,23 @@ import os.path
 
 CONF_ROOT = os.path.dirname(__file__)
 
+# Sentry settings
+SENTRY_FEATURES['auth:register'] = False
+
+# Get and parse dokku env vars
+db_url = os.environ['DATABASE_URL']
+redis_url = os.environ['REDIS_URL']
+db_url_parts = urlparse.urlparse(db_url)
+redis_url_parts = urlparse.urlparse(redis_url)
+
 DATABASES = {
     'default': {
-        'ENGINE': 'sentry.db.postgres',
-        'NAME': 'sentry',
-        'USER': 'postgres',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': db_url_parts.path[1:],
+        'USER': db_url_parts.username,
+        'PASSWORD': db_url_parts.password,
+        'HOST': db_url_parts.hostname,
+        'PORT': db_url_parts.port,
     }
 }
 
@@ -39,12 +48,11 @@ SENTRY_SINGLE_ORGANIZATION = True
 
 # Generic Redis configuration used as defaults for various things including:
 # Buffers, Quotas, TSDB
-
 SENTRY_REDIS_OPTIONS = {
     'hosts': {
         0: {
-            'host': '127.0.0.1',
-            'port': 6379,
+            'host': redis_url_parts.host,
+            'port': redis_url_parts.port,
         }
     }
 }
@@ -79,7 +87,7 @@ SENTRY_CACHE = 'sentry.cache.redis.RedisCache'
 # information on configuring your queue broker and workers. Sentry relies
 # on a Python framework called Celery to manage queues.
 
-BROKER_URL = 'redis://localhost:6379'
+BROKER_URL = redis_url
 
 ###############
 # Rate Limits #
@@ -154,7 +162,7 @@ SENTRY_FILESTORE_OPTIONS = {
 # FORCE_SCRIPT_NAME = '/sentry'
 
 SENTRY_WEB_HOST = '0.0.0.0'
-SENTRY_WEB_PORT = 9000
+SENTRY_WEB_PORT = os.environ.get('PORT')
 SENTRY_WEB_OPTIONS = {
     # 'workers': 3,  # the number of gunicorn workers
     # 'secure_scheme_headers': {'X-FORWARDED-PROTO': 'https'},
