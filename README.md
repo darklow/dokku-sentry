@@ -2,8 +2,23 @@
 
 Deploy [Sentry](https://github.com/getsentry/sentry) 8.x on [dokku](http://dokku.viewdocs.io/dokku/) with official [postgres](https://github.com/dokku/dokku-postgres) and [redis](https://github.com/dokku/dokku-redis) plugins.
 
-## Install dokku plugins
+This setup uses [uWSGI](https://uwsgi-docs.readthedocs.org/en/latest/) as master process for all the child processes needed to properly run Sentry:
 
+```ini
+; uwsgi.ini
+[uwsgi]
+master = true
+attach-daemon = sentry start
+attach-daemon = sentry celery worker
+attach-daemon = sentry celery beat
+
+; Run nightly cron
+cron = 0 3 -1 -1 -1 sentry cleanup --days=90
+```
+
+Instructions:
+
+## Install dokku plugins
 
 Go to your dokku server and install following plugins:
 
@@ -19,7 +34,7 @@ sudo dokku plugin:install https://github.com/dokku/dokku-redis.git redis
 
 ```
 
-## Setup dokku
+## Prepare dokku
 
 
 1) Create dokku app
@@ -44,12 +59,20 @@ ssh dokku@yourserver redis:link sentry sentry
 ssh dokku@yourserver config:set sentry SENTRY_CONF=./
 ```
 
-5) Add remote dokku
+## Clone and deploy
+
+1) Clone this repository locally
+```
+git clone https://github.com/darklow/dokku-sentry.git
+cd dokku-sentry
+```
+
+2) Add remote dokku
 ```
 git remote add dokku dokku@yourserver:sentry
 ```
 
-6) Deploy app
+3) Deploy app
 ```
 git push dokku
 ```
@@ -79,7 +102,7 @@ ssh -t dokku@yourserver run sentry "sentry createuser"
 You can customise `sentry.conf.py` to fit your needs. However you can also override any config variable using dokku env vars. Use `SC_` prefix (as of Sentry Config) to override specific sentry config variables. For example:
 
 ```
-ssh dokku@yourserver config:set sentry SC_EMAIL_HOST=mail.yourserver.com SC_EMAIL_HOST_USER=sentry@yourserver.com SC_EMAIL_HOST_PASSWORD=XYZ123 SC_SERVER_EMAIL=sentry@yourserver.com
+ssh dokku@yourserver config:set sentry SC_EMAIL_HOST=mail.yourserver.com SC_EMAIL_HOST_USER=sentry@yourserver.com SC_EMAIL_HOST_PASSWORD=XYZ123 SC_SERVER_EMAIL=sentry@yourserver.com SC_EMAIL_USE_TLS=True
 ```
 
 
