@@ -40,7 +40,7 @@ ssh dokku@yourserver redis:link sentry sentry
 
 4) Add SENTRY_CONF to env vars
 ```
-ssh -t dokku@yourserver config:set sentry SENTRY_CONF=./
+ssh dokku@yourserver config:set sentry SENTRY_CONF=./
 ```
 
 5) Add remote dokku
@@ -73,6 +73,14 @@ ssh -t dokku@yourserver run sentry "sentry createuser"
 **VOILÀ!** Open your dokku app url, login and enjoy Sentry!
 
 
+## Customize sentry config
+
+You can customise `sentry.conf.py` to fit your needs. However you can also override any config variable using dokku env vars. Use `SC_` prefix (as of Sentry Config) to override specific sentry config variables. For example:
+
+```
+ssh dokku@yourserver config:set sentry SC_EMAIL_HOST=mail.yourserver.com SC_EMAIL_HOST_USER=sentry@yourserver.com SC_EMAIL_HOST_PASSWORD=XYZ123 SC_SERVER_EMAIL=sentry@yourserver.com
+```
+
 
 ## Notes
 
@@ -82,7 +90,7 @@ To run sentry help and other commands:
 ssh dokku@yourserver run sentry "sentry help"
 ```
 
-To enable console prompt use `-t` 
+To enable console prompt use `-t`
 
 ```
 ssh -t dokku@yourserver run sentry "sentry"
@@ -91,5 +99,5 @@ ssh -t dokku@yourserver run sentry "sentry"
 If something goes wrong you can use dokku logs to debug:
 
 ```
-ssh dokku@yourserver logs sentry
+ssh dokku@yourserver logs sentry -t
 ```
