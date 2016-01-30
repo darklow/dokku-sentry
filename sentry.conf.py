@@ -51,7 +51,7 @@ SENTRY_SINGLE_ORGANIZATION = True
 SENTRY_REDIS_OPTIONS = {
     'hosts': {
         0: {
-            'host': redis_url_parts.host,
+            'host': redis_url_parts.netloc.split(':')[0],
             'port': redis_url_parts.port,
         }
     }
