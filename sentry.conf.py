@@ -4,6 +4,7 @@
 from sentry.conf.server import *
 
 import os.path
+import urlparse
 
 CONF_ROOT = os.path.dirname(__file__)
 
@@ -51,8 +52,9 @@ SENTRY_SINGLE_ORGANIZATION = True
 SENTRY_REDIS_OPTIONS = {
     'hosts': {
         0: {
-            'host': redis_url_parts.netloc.split(':')[0],
+            'host': redis_url_parts.hostname,
             'port': redis_url_parts.port,
+            'password': (redis_url_parts.password or None),
         }
     }
 }
