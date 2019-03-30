@@ -16,7 +16,7 @@ attach-daemon = sentry celery beat
 cron = 0 3 -1 -1 -1 sentry cleanup --days=90
 ```
 
-Instructions:
+# HOWTO?
 
 ## Install dokku plugins
 
